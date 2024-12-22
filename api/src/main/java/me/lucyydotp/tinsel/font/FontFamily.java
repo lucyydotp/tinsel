@@ -15,6 +15,10 @@ import java.util.Set;
  */
 @NullMarked
 public interface FontFamily {
+    /**
+     * The width of the game's placeholder glyph that gets rendered when a glyph is not defined.
+     */
+    int PLACEHOLDER_CHARACTER_WIDTH = 5;
 
     /**
      * The font's unique identifier. The resource pack is expected to provide this key as a font with offset 0.
@@ -28,8 +32,28 @@ public interface FontFamily {
 
     /**
      * Gets the font with a given height offset.
+     *
      * @param offset the offset
      * @return the font with this offset, or null if it doesn't exist
      */
-    @Nullable Font offset(int offset);
+    @Nullable
+    Font offset(int offset);
+
+    /**
+     * Gets the width that a character will render at, not accounting for letter spacing.
+     * If the font does not define the character, the width of its placeholder should be provided. which is
+     * defined by {@link #PLACEHOLDER_CHARACTER_WIDTH}.
+     *
+     * @return the character's width
+     */
+    int measure(char character);
+
+
+    /**
+     * The vanilla font family with offset 0, built into the game's default assets.
+     */
+    static FontFamily vanilla() {
+        // TODO(lucy)
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 }

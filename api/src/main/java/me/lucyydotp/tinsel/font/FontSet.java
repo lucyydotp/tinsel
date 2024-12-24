@@ -9,6 +9,7 @@ import java.util.Map;
 
 /**
  * A set of {@link FontFamily} objects, available to the client via resource packs.
+ * The set is guaranteed to contain the font with key {@link FontFamily#DEFAULT_FONT_KEY}.
  */
 @NullMarked
 public interface FontSet {
@@ -28,6 +29,11 @@ public interface FontSet {
      * Gets a font by ID, if it exists.
      */
     @Nullable Font font(Key font);
+
+    /**
+     * Gets the default vanilla font with any configured offsets.
+     */
+    FontFamily defaultFont();
 
     /**
      * Creates a font set from a series of families.

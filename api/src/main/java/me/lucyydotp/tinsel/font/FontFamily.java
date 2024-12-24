@@ -62,7 +62,8 @@ public interface FontFamily {
 
 
     /**
-     * The vanilla font family with offset 0, built into the game's default assets.
+     * The vanilla font family with no offsets, built into the game's default assets.
+     * Used as a fallback in case no vanilla font is configured in a font set.
      */
     static FontFamily vanilla() {
         return FontFamilyImpl.VANILLA_FONT;

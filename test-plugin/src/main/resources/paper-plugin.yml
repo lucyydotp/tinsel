@@ -1,0 +1,4 @@
+name: Tinsel-Test-Plugin
+main: me.lucyydotp.tinsel.testplugin.TinselTestPlugin
+version: unversioned
+api-version: "1.21"

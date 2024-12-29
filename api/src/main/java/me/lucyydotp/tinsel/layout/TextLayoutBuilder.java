@@ -102,8 +102,13 @@ public class TextLayoutBuilder {
 
         @Override
         public void draw(Component component) {
+            drawWithWidth(component, textWidthMeasurer.measure(component));
+        }
+
+        @Override
+        public void drawWithWidth(Component component, int width) {
             content.append(adjustForY(component));
-            cursorX += textWidthMeasurer.measure(component);
+            cursorX += width;
         }
 
         @Override

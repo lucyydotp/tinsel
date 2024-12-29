@@ -45,11 +45,21 @@ public class TinselTestPlugin extends JavaPlugin {
             ctx.drawAligned(Component.text("Right"), 1);
         });
 
+
+        final var five = new TextLayoutBuilder(tinsel);
+        five.add(ctx -> {
+            for (int i = 0; i < 12; i++) {
+                ctx.moveCursor(0, -48 + (i * 8));
+                ctx.draw(Component.text("Line " + (i + 1)));
+            }
+        });
+
         this.layouts = Map.of(
                 "one", one,
                 "two", two,
                 "three", three,
-                "four", four
+                "four", four,
+                "five", five
         );
     }
 

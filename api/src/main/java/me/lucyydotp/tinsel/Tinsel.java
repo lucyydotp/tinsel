@@ -2,6 +2,7 @@ package me.lucyydotp.tinsel;
 
 import me.lucyydotp.tinsel.font.FontFamily;
 import me.lucyydotp.tinsel.font.FontSet;
+import me.lucyydotp.tinsel.font.Spacing;
 import me.lucyydotp.tinsel.measurement.TextWidthMeasurer;
 import net.kyori.adventure.key.Key;
 import org.intellij.lang.annotations.Subst;
@@ -46,7 +47,8 @@ public class Tinsel {
 
         return new Tinsel(
                 FontSet.of(
-                        FontFamily.vanillaWithOffsets(offsetMap)
+                        FontFamily.vanillaWithOffsets(offsetMap),
+                        Spacing.font()
                 )
         );
     }

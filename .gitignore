@@ -39,5 +39,5 @@ bin/
 .DS_Store
 
 
-test-plugin/run
+example/plugin/run
 resources/src/main/fontBitmaps/minecraft/font/*.png

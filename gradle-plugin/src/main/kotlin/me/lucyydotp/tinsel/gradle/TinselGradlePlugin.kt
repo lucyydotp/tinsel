@@ -1,12 +1,17 @@
 package me.lucyydotp.tinsel.gradle
 
+import me.lucyydotp.tinsel.gradle.DependencyConfigurations.configureDependencyConfig
 import me.lucyydotp.tinsel.gradle.dsl.TinselExtension
 import me.lucyydotp.tinsel.gradle.task.GenerateFontsTask
 import me.lucyydotp.tinsel.gradle.util.camelCase
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.bundling.Zip
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.register
 
 
 public class TinselGradlePlugin : Plugin<Project> {
@@ -16,40 +21,45 @@ public class TinselGradlePlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
-        val ext = project.extensions.create("tinsel", TinselExtension::class.java)
+        val dependencyConfig = project.configureDependencyConfig()
+
+        val ext = project.extensions.create<TinselExtension>("tinsel")
         ext.packArchiveName.convention("resources.zip")
 
         ext.fonts.all { font ->
-            project.tasks.register(
+            project.tasks.register<GenerateFontsTask>(
                 "generate${font.key.namespace.camelCase()}${font.key.name.camelCase()}Font",
-                GenerateFontsTask::class.java
             ) {
-                it.group = TASK_GROUP
-                it.key.set(font.key)
-                it.outputNamespace.set(font.outputNamespace)
-                it.offsets.set(font.offsets)
-                it.bitmapSpacing.set(font.addedBitmapSpacing)
+                group = TASK_GROUP
+                key.set(font.key)
+                outputNamespace.set(font.outputNamespace)
+                offsets.set(font.offsets)
+                bitmapSpacing.set(font.addedBitmapSpacing)
             }
         }
 
-        val generateFontsTask = project.tasks.register("generateFonts") {
-            it.group = TASK_GROUP
-            it.dependsOn(it.project.tasks.filterIsInstance<GenerateFontsTask>())
-            it.outputs.dir("build/tinsel")
+        val generateFontsTask = project.tasks.register<Task>("generateFonts") {
+            group = TASK_GROUP
+            dependsOn(project.tasks.filterIsInstance<GenerateFontsTask>())
+            outputs.dir("build/tinsel")
         }
 
-        val assembleTask = project.tasks.register("assembleResourcePack", Zip::class.java) {
-            it.group = TASK_GROUP
-            it.from(generateFontsTask).into("")
-            it.from("src/main/resources")
+        val assembleTask = project.tasks.register<Zip>("assembleResourcePack") {
+            group = TASK_GROUP
+            from(dependencyConfig.map { project.zipTree(it) })
+            from(generateFontsTask).into("")
+            from("src/main/resources")
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
-            it.destinationDirectory.set(project.file("build/distributions"))
-            it.archiveFileName.set(ext.packArchiveName)
+            destinationDirectory.set(project.file("build/distributions"))
+            archiveFileName.set(ext.packArchiveName)
         }
 
-        project.tasks.register("build") {
-            it.dependsOn(assembleTask)
+        project.tasks.register<Task>("build") {
+            dependsOn(assembleTask)
         }
+
+        project.artifacts.add(dependencyConfig.name, assembleTask)
 
         System.getenv()["MINECRAFT_RESOURCE_PACKS_FOLDER"]?.let { folder ->
             project.tasks.register("copyToMinecraft", Copy::class.java) {

@@ -7,5 +7,6 @@ pluginManagement {
 include(
     "api",
     "resources",
-    "test-plugin",
+    "example:plugin",
+    "example:pack",
 )

@@ -40,3 +40,4 @@ bin/
 
 
 test-plugin/run
+resources/src/main/vanilla/*.png

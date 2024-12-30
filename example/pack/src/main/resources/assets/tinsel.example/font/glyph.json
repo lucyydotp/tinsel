@@ -1,0 +1,13 @@
+{
+    "providers": [
+        {
+            "type": "bitmap",
+            "file": "tinsel.example:glyphs/background.png",
+            "height": 11,
+            "ascent": 9,
+            "chars": [
+                "\uE000"
+            ]
+        }
+    ]
+}

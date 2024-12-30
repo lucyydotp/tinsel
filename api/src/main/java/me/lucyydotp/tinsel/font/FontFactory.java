@@ -22,7 +22,7 @@ import java.util.Map;
  */
 @NullMarked
 class FontFactory {
-    private static final Gson gson = new GsonBuilder()
+    static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Key.class, new KeySerializer())
             .create();
 
@@ -36,6 +36,9 @@ class FontFactory {
         public Key read(JsonReader in) throws IOException {
             return Key.key(in.nextString());
         }
+    }
+
+    private FontFactory() {
     }
 
     /**
@@ -57,7 +60,7 @@ class FontFactory {
      *
      * @param stream an input stream to read the font file
      */
-    public static FontFamily fromJson(InputStream stream) throws IOException {
+    static FontFamily fromJson(InputStream stream) throws IOException {
         final FontDefinition file;
         try (final var reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
             file = gson.fromJson(reader, FontDefinition.class);

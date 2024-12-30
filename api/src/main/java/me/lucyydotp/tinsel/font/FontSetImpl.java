@@ -28,7 +28,7 @@ final class FontSetImpl implements FontSet {
         this.defaultFont = fontFamilies.getOrDefault(FontFamily.DEFAULT_FONT_KEY, FontFamily.vanilla());
     }
 
-    static FontSetImpl ofFamilies(FontFamily... families) {
+    static FontSetImpl ofFamilies(Iterable<FontFamily> families) {
         final var familyMap = new HashMap<Key, FontFamily>();
         final var fonts = new HashMap<Key, Font>();
 

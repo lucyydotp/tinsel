@@ -2,7 +2,13 @@ plugins {
     id("me.lucyydotp.tinsel")
 }
 
-tinsel.packArchiveName = "tinsel-example-pack.zip"
+
+tinsel {
+    packArchiveName = "tinsel-example-pack.zip"
+    fonts.create("tinsel.example:glyph") {
+        offsets = setOf(12, 24)
+    }
+}
 
 dependencies {
     // Tinsel lets you include contents from other packs built through the plugin.

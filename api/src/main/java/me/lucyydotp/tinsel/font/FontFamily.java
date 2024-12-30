@@ -6,6 +6,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -86,7 +87,50 @@ public interface FontFamily {
      * @throws IOException if the file cannot be loaded
      */
     @Contract(pure = true, value = "_ -> new")
-    static FontFamily fromFile(Path path) throws IOException {
+    static FontFamily fromPreGenerated(Path path) throws IOException {
         return FontFactory.fromJson(Files.newInputStream(path));
+    }
+
+    /**
+     * Creates a {@link ResourcePackBuilder} to load fonts from a resource pack.
+     * @param resourcePackPath the path to the resource pack
+     * @return a new resource pack builder
+     */
+    @Contract(pure = true, value = "_ -> new")
+    static ResourcePackBuilder fromResourcePack(Path resourcePackPath) {
+        try {
+            return new ResourcePackBuilderImpl(FileSystems.newFileSystem(resourcePackPath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Loads fonts from a resource pack.
+     */
+    interface ResourcePackBuilder {
+        /**
+         * Adds a font family to load from the pack.
+         * @param fontKey the font family's key
+         * @param offsets the font's offsets
+         * @return this builder
+         */
+        @Contract("_, _ -> this")
+        ResourcePackBuilder add(Key fontKey, Map<Integer, Key> offsets);
+
+        /**
+         * Adds a font family to load from the pack, with no offsets.
+         * @param fontKey the font family's key
+         * @return this builder
+         */
+        default ResourcePackBuilder add(Key fontKey) {
+            return add(fontKey, Map.of());
+        }
+
+        /**
+         * Gets the families loaded from the pack.
+         */
+        @Contract(pure = true)
+        Set<FontFamily> build();
     }
 }

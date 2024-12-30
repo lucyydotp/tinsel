@@ -8,6 +8,7 @@ import me.lucyydotp.tinsel.font.Spacing;
 import me.lucyydotp.tinsel.measurement.TextWidthMeasurer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.Style;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -17,10 +18,16 @@ public class TextLayoutBuilder {
     private final List<TextDrawable> drawables = new ArrayList<>();
     private final TextWidthMeasurer textWidthMeasurer;
     private final FontSet fonts;
+    private final Style baseStyle;
 
-    public TextLayoutBuilder(Tinsel tinsel) {
+    public TextLayoutBuilder(Tinsel tinsel, Style baseStyle) {
         this.textWidthMeasurer = tinsel.textWidthMeasurer();
         this.fonts = tinsel.fonts();
+        this.baseStyle = baseStyle;
+    }
+
+    public TextLayoutBuilder(Tinsel tinsel) {
+        this(tinsel, Style.empty());
     }
 
     public void add(TextDrawable drawable) {
@@ -37,7 +44,7 @@ public class TextLayoutBuilder {
 
     private class Context implements TextDrawContext {
         private final int totalWidth;
-        private final TextComponent.Builder content = Component.text();
+        private final TextComponent.Builder content = Component.text().style(baseStyle);
         private int cursorX = 0;
         private int cursorY = 0;
 

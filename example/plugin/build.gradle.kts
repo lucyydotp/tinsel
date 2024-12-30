@@ -29,5 +29,9 @@ tasks {
 
     runServer {
         minecraftVersion("1.21.4")
+        environment(
+            "TINSEL_PACK_PATH",
+            project(":example:pack").tasks["assembleResourcePack"].outputs.files.singleFile.path
+        )
     }
 }

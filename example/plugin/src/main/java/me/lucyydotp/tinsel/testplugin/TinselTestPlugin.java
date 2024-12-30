@@ -6,17 +6,32 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import me.lucyydotp.tinsel.Tinsel;
+import me.lucyydotp.tinsel.font.FontFamily;
+import me.lucyydotp.tinsel.font.OffsetMap;
 import me.lucyydotp.tinsel.layout.TextLayoutBuilder;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.ShadowColor;
+import net.kyori.adventure.text.format.Style;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.nio.file.Path;
 import java.util.Map;
 
 @SuppressWarnings("UnstableApiUsage")
 public class TinselTestPlugin extends JavaPlugin {
 
-    private final Tinsel tinsel = Tinsel.withTinselPack();
+    private static final Key GLYPH_FONT = Key.key("tinsel.example:glyph");
+
+    private final Tinsel tinsel = Tinsel.builder()
+            .withTinselPack()
+            .withFonts(
+                    FontFamily.fromResourcePack(Path.of(System.getenv("TINSEL_PACK_PATH")))
+                            .add(GLYPH_FONT, OffsetMap.offsets(GLYPH_FONT, 12, 24))
+                            .build()
+            ).build();
 
     private final Map<String, TextLayoutBuilder> layouts;
 
@@ -54,12 +69,33 @@ public class TinselTestPlugin extends JavaPlugin {
             }
         });
 
+        final var bg = new TextLayoutBuilder(tinsel, Style.style(ShadowColor.none()));
+        bg.add(ctx -> {
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    ctx.moveCursor(0, j * 12);
+                    ctx.drawAligned(Component.text("\uE000").font(GLYPH_FONT), i / 2.0f);
+
+                    final var text = Component.text("gaming").color(switch (Math.floorMod(i + j, 3)) {
+                        case 0 -> NamedTextColor.RED;
+                        case 1 -> NamedTextColor.GREEN;
+                        default -> NamedTextColor.BLUE;
+                    });
+
+                    final var measured = tinsel.textWidthMeasurer().measure(text);
+                    ctx.moveCursor(ctx.cursorX() - 24 - (measured / 2), ctx.cursorY());
+                    ctx.drawWithWidth(text, measured);
+                }
+            }
+        });
+
         this.layouts = Map.of(
                 "one", one,
                 "two", two,
                 "three", three,
                 "four", four,
-                "five", five
+                "five", five,
+                "bg", bg
         );
     }
 

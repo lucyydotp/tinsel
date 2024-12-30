@@ -30,7 +30,6 @@ record FontFamilyImpl(Key key, Map<Integer, Integer> charWidthMap, Map<Integer, 
     }
 
     FontFamilyImpl {
-        // TODO(lucy): is this the behaviour we want? would just adding it if it's not there already be better?
         if (!fonts.containsKey(0)) {
             throw new IllegalArgumentException(String.format("Font family '%s' has no font mapping for width 0", key.asString()));
         }
@@ -44,6 +43,14 @@ record FontFamilyImpl(Key key, Map<Integer, Integer> charWidthMap, Map<Integer, 
                     offset.getValue(),
                     key,
                     offset.getKey()
+            ));
+        }
+
+        if (!fontMap.containsKey(0)) {
+            fontMap.put(0, new FontImpl(
+                    key,
+                    key,
+                    0
             ));
         }
 

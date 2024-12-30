@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -39,8 +40,17 @@ public interface FontSet {
      * Creates a font set from a series of families.
      * @param families the families to add to the set
      */
-    @Contract("_ -> new")
-    static FontSet of(FontFamily... families) {
+    @Contract(pure = true, value = "_ -> new")
+    static FontSet of(Iterable<FontFamily> families) {
         return FontSetImpl.ofFamilies(families);
+    }
+
+    /**
+     * Creates a font set from a series of families.
+     * @param families the families to add to the set
+     */
+    @Contract(pure = true, value = "_ -> new")
+    static FontSet of(FontFamily... families) {
+        return of(Arrays.asList(families));
     }
 }

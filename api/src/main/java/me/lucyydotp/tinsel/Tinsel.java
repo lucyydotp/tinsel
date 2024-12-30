@@ -4,12 +4,17 @@ import me.lucyydotp.tinsel.font.FontFamily;
 import me.lucyydotp.tinsel.font.FontSet;
 import me.lucyydotp.tinsel.font.OffsetMap;
 import me.lucyydotp.tinsel.font.Spacing;
+import me.lucyydotp.tinsel.layout.BasicDrawContextImpl;
+import me.lucyydotp.tinsel.layout.TextDrawContext;
 import me.lucyydotp.tinsel.measurement.TextWidthMeasurer;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
 import org.jetbrains.annotations.Contract;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * An instance of Tinsel.
@@ -29,6 +34,19 @@ public class Tinsel {
 
     public TextWidthMeasurer textWidthMeasurer() {
         return textWidthMeasurer;
+    }
+
+    /**
+     * Draws some text.
+     * @param totalWidth the total width of the output text. The component will be padded to be exactly of this width after building
+     * @param baseStyle the style to apply to the root component. May be {@link Style#empty()}.
+     * @param fn the function to draw the text with. Will be invoked in-place exactly once.
+     * @return the drawn text
+     */
+    public Component draw(int totalWidth, Style baseStyle, Consumer<TextDrawContext> fn) {
+        final var context = new BasicDrawContextImpl(this, totalWidth, baseStyle);
+        fn.accept(context);
+        return context.output();
     }
 
     /**

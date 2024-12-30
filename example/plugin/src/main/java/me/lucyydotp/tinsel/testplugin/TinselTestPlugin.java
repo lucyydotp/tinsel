@@ -8,7 +8,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import me.lucyydotp.tinsel.Tinsel;
 import me.lucyydotp.tinsel.font.FontFamily;
 import me.lucyydotp.tinsel.font.OffsetMap;
-import me.lucyydotp.tinsel.layout.TextLayoutBuilder;
+import me.lucyydotp.tinsel.layout.TextDrawContext;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -20,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @SuppressWarnings("UnstableApiUsage")
 public class TinselTestPlugin extends JavaPlugin {
@@ -36,26 +37,23 @@ public class TinselTestPlugin extends JavaPlugin {
 
     private ActionBarTextHolder actionBarTextHolder;
 
-    private final Map<String, TextLayoutBuilder> layouts;
+    private final Map<String, Consumer<TextDrawContext>> layouts;
 
     public TinselTestPlugin() {
-        final var horizontal = new TextLayoutBuilder(tinsel);
-        horizontal.add((ctx) -> {
+        final Consumer<TextDrawContext> horizontal = ctx -> {
             ctx.drawAligned(Component.text("Left"), 0f);
             ctx.drawAligned(Component.text("Centred"), 0.5f);
             ctx.drawAligned(Component.text("Right"), 1f);
-        });
+        };
 
-        final var lines = new TextLayoutBuilder(tinsel);
-        lines.add(ctx -> {
+        final Consumer<TextDrawContext> lines = ctx -> {
             for (int i = 0; i < 12; i++) {
                 ctx.moveCursor(0, -48 + (i * 8));
                 ctx.draw(Component.text("Line " + (i + 1)));
             }
-        });
+        };
 
-        final var background = new TextLayoutBuilder(tinsel, Style.style(ShadowColor.none()));
-        background.add(ctx -> {
+        final Consumer<TextDrawContext> background = ctx -> {
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     ctx.moveCursor(0, j * 12);
@@ -72,10 +70,9 @@ public class TinselTestPlugin extends JavaPlugin {
                     ctx.drawWithWidth(text, measured);
                 }
             }
-        });
+        };
 
-        final var dialogue = new TextLayoutBuilder(tinsel, Style.style(ShadowColor.none()));
-        dialogue.add(ctx -> {
+        final Consumer<TextDrawContext> dialogue = ctx -> {
             ctx.drawAligned(Component.text("\uE001").font(GLYPH_FONT), 0.5f);
             ctx.moveCursor(4, 0);
             ctx.draw(Component.text("NPC Name").color(NamedTextColor.AQUA).decorate(TextDecoration.BOLD));
@@ -85,10 +82,9 @@ public class TinselTestPlugin extends JavaPlugin {
             ctx.draw(Component.text("there is no way a bee should be able to fly."));
             ctx.moveCursor(251, 32);
             ctx.draw(Component.text("Click").color(NamedTextColor.GRAY), 1);
-        });
+        };
 
-        final var victory = new TextLayoutBuilder(tinsel, Style.style(ShadowColor.none()));
-        victory.add(ctx -> {
+        final Consumer<TextDrawContext> victory = ctx -> {
             ctx.drawAligned(Component.text("\uE001").font(GLYPH_FONT), 0.5f);
             ctx.moveCursor(ctx.cursorX(), -8);
             ctx.drawAligned(Component.text("VICTORY!").color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD), 0.5f);
@@ -114,7 +110,7 @@ public class TinselTestPlugin extends JavaPlugin {
 
             ctx.moveCursor(ctx.cursorX(), 32);
             ctx.drawAligned(Component.text("Click to continue").color(NamedTextColor.GRAY), 0.5f);
-        });
+        };
 
         this.layouts = Map.of(
                 "horizontal", horizontal,
@@ -142,7 +138,7 @@ public class TinselTestPlugin extends JavaPlugin {
                             final var layout = layouts.get(ctx.getArgument("layout", String.class));
                             if (layout == null) return 0;
 
-                            actionBarTextHolder.setText(player, layout.draw(255));
+                            actionBarTextHolder.setText(player, tinsel.draw(255, Style.style(ShadowColor.none()), layout));
                             return 0;
                         })
         ).build();

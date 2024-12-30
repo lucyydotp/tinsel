@@ -108,7 +108,11 @@ public class TextLayoutBuilder {
         }
 
         @Override
-        public void draw(Component component) {
+        public void draw(Component component, float align) {
+            final var width = textWidthMeasurer.measure(component);
+            final var spacing = -Math.round(width * align);
+
+            moveCursor(cursorX + spacing, cursorY);
             drawWithWidth(component, textWidthMeasurer.measure(component));
         }
 

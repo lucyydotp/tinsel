@@ -8,6 +8,15 @@
             "chars": [
                 "\uE000"
             ]
+        },
+        {
+            "type": "bitmap",
+            "file": "tinsel.example:glyphs/npc_dialogue.png",
+            "height": 48,
+            "ascent": 12,
+            "chars": [
+                "\uE001"
+            ]
         }
     ]
 }

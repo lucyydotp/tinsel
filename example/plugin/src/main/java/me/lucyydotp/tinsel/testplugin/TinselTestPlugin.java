@@ -14,6 +14,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.ShadowColor;
 import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -33,44 +34,28 @@ public class TinselTestPlugin extends JavaPlugin {
                             .build()
             ).build();
 
+    private ActionBarTextHolder actionBarTextHolder;
+
     private final Map<String, TextLayoutBuilder> layouts;
 
     public TinselTestPlugin() {
-        final var one = new TextLayoutBuilder(tinsel);
-        one.add((ctx) -> ctx.drawAligned(Component.text("Centred"), 0.5f));
-
-        final var two = new TextLayoutBuilder(tinsel);
-        two.add((ctx) -> ctx.drawAligned(Component.text("Left"), 0f));
-        two.add((ctx) -> ctx.drawAligned(Component.text("Centred"), 0.5f));
-
-        final var three = new TextLayoutBuilder(tinsel);
-        three.add((ctx) -> ctx.drawAligned(Component.text("Left"), 0f));
-        three.add((ctx) -> ctx.drawAligned(Component.text("Centred"), 0.5f));
-        three.add((ctx) -> ctx.drawAligned(Component.text("Right"), 1));
-
-        final var four = new TextLayoutBuilder(tinsel);
-        four.add((ctx) -> ctx.drawAligned(Component.text("Left"), 0f));
-        four.add((ctx) -> {
-            ctx.moveCursor(ctx.cursorX(), 12);
+        final var horizontal = new TextLayoutBuilder(tinsel);
+        horizontal.add((ctx) -> {
+            ctx.drawAligned(Component.text("Left"), 0f);
             ctx.drawAligned(Component.text("Centred"), 0.5f);
-            ctx.drawAligned(Component.text("Left 2"), 0f);
-        });
-        four.add((ctx) -> {
-            ctx.moveCursor(ctx.cursorX(), 4);
-            ctx.drawAligned(Component.text("Right"), 1);
+            ctx.drawAligned(Component.text("Right"), 1f);
         });
 
-
-        final var five = new TextLayoutBuilder(tinsel);
-        five.add(ctx -> {
+        final var lines = new TextLayoutBuilder(tinsel);
+        lines.add(ctx -> {
             for (int i = 0; i < 12; i++) {
                 ctx.moveCursor(0, -48 + (i * 8));
                 ctx.draw(Component.text("Line " + (i + 1)));
             }
         });
 
-        final var bg = new TextLayoutBuilder(tinsel, Style.style(ShadowColor.none()));
-        bg.add(ctx -> {
+        final var background = new TextLayoutBuilder(tinsel, Style.style(ShadowColor.none()));
+        background.add(ctx -> {
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     ctx.moveCursor(0, j * 12);
@@ -89,13 +74,54 @@ public class TinselTestPlugin extends JavaPlugin {
             }
         });
 
+        final var dialogue = new TextLayoutBuilder(tinsel, Style.style(ShadowColor.none()));
+        dialogue.add(ctx -> {
+            ctx.drawAligned(Component.text("\uE001").font(GLYPH_FONT), 0.5f);
+            ctx.moveCursor(4, 0);
+            ctx.draw(Component.text("NPC Name").color(NamedTextColor.AQUA).decorate(TextDecoration.BOLD));
+            ctx.moveCursor(4, 12);
+            ctx.draw(Component.text("According to all known laws of aviation,"));
+            ctx.moveCursor(4, 20);
+            ctx.draw(Component.text("there is no way a bee should be able to fly."));
+            ctx.moveCursor(251, 32);
+            ctx.draw(Component.text("Click").color(NamedTextColor.GRAY), 1);
+        });
+
+        final var victory = new TextLayoutBuilder(tinsel, Style.style(ShadowColor.none()));
+        victory.add(ctx -> {
+            ctx.drawAligned(Component.text("\uE001").font(GLYPH_FONT), 0.5f);
+            ctx.moveCursor(ctx.cursorX(), -8);
+            ctx.drawAligned(Component.text("VICTORY!").color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD), 0.5f);
+            ctx.moveCursor(24, 8);
+            ctx.draw(Component.text("Kills"));
+            ctx.moveCursor(102, 8);
+            ctx.draw(Component.text("15").decorate(TextDecoration.BOLD), 1);
+
+            ctx.moveCursor(153, 8);
+            ctx.draw(Component.text("XP"));
+            ctx.moveCursor(228, 8);
+            ctx.draw(Component.text("+99999").color(NamedTextColor.LIGHT_PURPLE).decorate(TextDecoration.BOLD), 1);
+
+            ctx.moveCursor(24, 20);
+            ctx.draw(Component.text("Deaths"));
+            ctx.moveCursor(102, 20);
+            ctx.draw(Component.text("2").decorate(TextDecoration.BOLD), 1);
+
+            ctx.moveCursor(153, 20);
+            ctx.draw(Component.text("Coins"));
+            ctx.moveCursor(228, 20);
+            ctx.draw(Component.text("+500").color(NamedTextColor.YELLOW).decorate(TextDecoration.BOLD), 1);
+
+            ctx.moveCursor(ctx.cursorX(), 32);
+            ctx.drawAligned(Component.text("Click to continue").color(NamedTextColor.GRAY), 0.5f);
+        });
+
         this.layouts = Map.of(
-                "one", one,
-                "two", two,
-                "three", three,
-                "four", four,
-                "five", five,
-                "bg", bg
+                "horizontal", horizontal,
+                "lines", lines,
+                "background", background,
+                "dialogue", dialogue,
+                "victory", victory
         );
     }
 
@@ -116,7 +142,7 @@ public class TinselTestPlugin extends JavaPlugin {
                             final var layout = layouts.get(ctx.getArgument("layout", String.class));
                             if (layout == null) return 0;
 
-                            player.sendActionBar(layout.draw(181));
+                            actionBarTextHolder.setText(player, layout.draw(255));
                             return 0;
                         })
         ).build();
@@ -124,6 +150,7 @@ public class TinselTestPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        actionBarTextHolder = new ActionBarTextHolder(this);
         getLifecycleManager().registerEventHandler(
                 LifecycleEvents.COMMANDS,
                 (event) -> event.registrar().register(node())

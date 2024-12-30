@@ -29,8 +29,18 @@ public interface TextDrawContext {
     /**
      * Draws a component, measuring it in the process.
      * @param component the component to draw
+     * @param align where to draw the component from, between 0.0 and 1.0. 0.0 draws from the left edge forwards, 1.0
+     *  draws from the right edge, and 0.5 centres the text on the cursor.
      */
-    void draw(Component component);
+    void draw(Component component, float align);
+
+    /**
+     * Draws a component, measuring it in the process.
+     * @param component the component to draw
+     */
+    default void draw(Component component) {
+        draw(component, 0);
+    }
 
     /**
      * Draws a component, using a provided width measurement instead of measuring.

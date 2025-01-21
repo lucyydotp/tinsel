@@ -19,6 +19,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
 }
 
+base {
+    archivesName = "tinsel-api"
+}
+
 java {
     withJavadocJar()
     withSourcesJar()
@@ -30,7 +34,7 @@ tasks.test {
 
 signing {
     useGpgCmd()
-    sign(configurations.archives.get())
+    sign(publishing.publications)
 }
 
 publishing {
@@ -71,4 +75,8 @@ nmcp {
         password = project.ext["sonatypeCentralPassword"] as String
         publicationType = "AUTOMATIC"
     }
+}
+
+tasks.publish {
+    dependsOn(tasks.publishAllPublicationsToCentralPortal)
 }

@@ -2,5 +2,7 @@ plugins {
     id("java")
 }
 
-group = "me.lucyydotp"
-version = "1.0-SNAPSHOT"
+allprojects {
+    group = "me.lucyydotp.tinsel"
+    version = "0.1.0"
+}

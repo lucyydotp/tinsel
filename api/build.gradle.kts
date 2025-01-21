@@ -42,6 +42,7 @@ publishing {
         from(components["java"])
         pom {
             name = "Tinsel"
+            artifactId = "tinsel-api"
             description = "A library for Minecraft Java servers to do fun things with text."
             url = "https://github.com/lucyydotp/tinsel.git"
 

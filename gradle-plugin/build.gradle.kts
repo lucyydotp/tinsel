@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "me.lucyydotp.tinsel"
-version = "0.1.0"
+version = "0.1.1"
 
 kotlin {
     jvmToolchain(17)

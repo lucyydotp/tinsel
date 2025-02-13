@@ -83,7 +83,7 @@ public abstract class GenerateFontsTask : DefaultTask() {
     }
 
     @TaskAction
-    private fun action() {
+    public fun action() {
         val def = gson.fromJson(definitionFile.get().readText(), JsonObject::class.java)
         def.getAsJsonArray("providers").forEach {
             val provider = it.asJsonObject

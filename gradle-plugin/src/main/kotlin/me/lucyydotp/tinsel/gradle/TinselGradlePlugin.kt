@@ -1,6 +1,7 @@
 package me.lucyydotp.tinsel.gradle
 
-import me.lucyydotp.tinsel.gradle.DependencyConfigurations.configureDependencyConfig
+import me.lucyydotp.tinsel.gradle.DependencyConfigurations.createIncludeConfiguration
+import me.lucyydotp.tinsel.gradle.DependencyConfigurations.createResourcePackConfiguration
 import me.lucyydotp.tinsel.gradle.dsl.TinselExtension
 import me.lucyydotp.tinsel.gradle.task.GenerateFontsTask
 import me.lucyydotp.tinsel.gradle.util.camelCase
@@ -15,13 +16,17 @@ import org.gradle.kotlin.dsl.register
 
 
 public class TinselGradlePlugin : Plugin<Project> {
-    internal companion object {
-        const val MINECRAFT_NAMESPACE = "minecraft"
-        const val TASK_GROUP = "tinsel"
+    public companion object {
+        internal const val MINECRAFT_NAMESPACE = "minecraft"
+        internal const val TASK_GROUP = "tinsel"
+
+        public const val INCLUDE_CONFIGURATION: String = "include"
+        public const val RESOURCE_PACK_CONFIGURATION: String = "resourcePack"
     }
 
     override fun apply(project: Project) {
-        val dependencyConfig = project.configureDependencyConfig()
+        val includeConfig = project.createIncludeConfiguration()
+        val resourcePackConfig = project.createResourcePackConfiguration()
 
         val ext = project.extensions.create<TinselExtension>("tinsel")
         ext.packArchiveName.convention("resources.zip")
@@ -46,7 +51,7 @@ public class TinselGradlePlugin : Plugin<Project> {
 
         val assembleTask = project.tasks.register<Zip>("assembleResourcePack") {
             group = TASK_GROUP
-            from(dependencyConfig.map { project.zipTree(it) })
+            from(includeConfig.map { project.zipTree(it) })
             from(generateFontsTask).into("")
             from("src/main/resources")
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
@@ -59,7 +64,7 @@ public class TinselGradlePlugin : Plugin<Project> {
             dependsOn(assembleTask)
         }
 
-        project.artifacts.add(dependencyConfig.name, assembleTask)
+        project.artifacts.add(resourcePackConfig.name, assembleTask)
 
         System.getenv()["MINECRAFT_RESOURCE_PACKS_FOLDER"]?.let { folder ->
             project.tasks.register("copyToMinecraft", Copy::class.java) {

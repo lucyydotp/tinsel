@@ -16,5 +16,5 @@ dependencies {
     // you should create your own by copying the `resources` folder at the root of
     // the project. This is helpful when you want to reuse content or configuration
     // across multiple packs.
-    resourcePack(project(":resources"))
+    include(project(":resources"))
 }

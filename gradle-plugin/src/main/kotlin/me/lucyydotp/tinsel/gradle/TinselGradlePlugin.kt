@@ -50,6 +50,7 @@ public class TinselGradlePlugin : Plugin<Project> {
         }
 
         val assembleTask = project.tasks.register<Zip>("assembleResourcePack") {
+            inputs.files(includeConfig)
             group = TASK_GROUP
             from(includeConfig.map { it.files.map(project::zipTree) })
             from(generateFontsTask).into("")

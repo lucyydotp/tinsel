@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.named
+
 plugins {
     id("xyz.jpenilla.run-paper") version "2.3.1"
     id("com.gradleup.shadow") version "9.0.0-beta4"
@@ -5,6 +7,12 @@ plugins {
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+val resourcePack by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named("tinsel-resource-pack"))
+}
 
 val shade by configurations.creating
 
@@ -19,7 +27,8 @@ repositories {
 
 dependencies {
     shade(project(":api"))
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    resourcePack(project(":example:pack"))
+    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
 }
 
 tasks {
@@ -28,10 +37,11 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.21.4")
+        dependsOn(resourcePack)
+        minecraftVersion("1.21.11")
         environment(
             "TINSEL_PACK_PATH",
-            project(":example:pack").tasks["assembleResourcePack"].outputs.files.singleFile.path
+            resourcePack.singleFile.absolutePath
         )
     }
 }

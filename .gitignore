@@ -41,3 +41,4 @@ bin/
 
 example/plugin/run
 resources/src/main/fontBitmaps/minecraft/font/*.png
+.kotlin

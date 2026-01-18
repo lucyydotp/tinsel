@@ -70,7 +70,7 @@ public abstract class GenerateFontsTask : DefaultTask() {
                     val height = provider["height"]?.takeIf(JsonElement::isJsonPrimitive)?.asInt ?: 8
                     val currentAscent = provider["ascent"].asInt
                     val newAscent = currentAscent - offset
-                    check(newAscent < height) { "Ascent $newAscent (${if (offset > 0) "+" else ""}${offset}) is higher than font height $height" }
+                    check(newAscent <= height) { "Ascent $newAscent (${if (offset > 0) "+" else ""}${offset}) is higher than font height $height" }
 
                     provider.addProperty(
                         "ascent",
@@ -84,6 +84,7 @@ public abstract class GenerateFontsTask : DefaultTask() {
 
     @TaskAction
     public fun action() {
+        outputDirectory.get().asFile.deleteRecursively()
         val def = gson.fromJson(definitionFile.get().readText(), JsonObject::class.java)
         def.getAsJsonArray("providers").forEach {
             val provider = it.asJsonObject
@@ -113,7 +114,7 @@ public abstract class GenerateFontsTask : DefaultTask() {
 
         offsets.get().forEach { offset ->
             outputDirectory.get()
-                .file("font/${key.get().name}_offset_$offset.json")
+                .file(if (offset == 0) "font/${key.get().name}.json" else "font/${key.get().name}_offset_$offset.json")
                 .asFile
                 .also { it.parentFile.mkdirs() }
                 .writeText(gson.toJson(createOffset(def, offset)))

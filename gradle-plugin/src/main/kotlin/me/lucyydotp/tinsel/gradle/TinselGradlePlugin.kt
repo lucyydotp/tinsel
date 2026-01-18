@@ -53,8 +53,8 @@ public class TinselGradlePlugin : Plugin<Project> {
             inputs.files(includeConfig)
             group = TASK_GROUP
             from(includeConfig.map { it.files.map(project::zipTree) })
-            from(generateFontsTask).into("")
             from("src/main/resources")
+            from(generateFontsTask).into("")
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
             destinationDirectory.set(project.file("build/distributions"))

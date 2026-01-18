@@ -1,12 +1,12 @@
 plugins {
-    kotlin("jvm") version "2.0.20"
+    kotlin("jvm") version "2.2.0"
     `java-gradle-plugin`
     id("com.gradle.plugin-publish") version "1.3.0"
     signing
 }
 
 group = "me.lucyydotp.tinsel"
-version = "0.2.1"
+version = "0.2.2"
 
 kotlin {
     jvmToolchain(17)
